@@ -1,139 +1,134 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Splendid Food</title>
-    <link rel="stylesheet" href="styles/style.min.css">
-    <link rel="icon" href="../public/favicon.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="../public/favicon.ico" type="image/ico">
-  </head>
-  <body>
 
-    <div id="app">
+<head>
+  <title>Splendid Food</title>
+  <link rel="stylesheet" href="styles/style.min.css">
+  <link rel="icon" href="../public/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="../public/favicon.ico" type="image/ico">
+</head>
 
-      <header class="top-bar spread">
-        <nav class="top-bar-nav">
-          <a href="#" class="top-bar-link">
-            <i class="icofont-spoon-and-fork"></i>
-            <span>Home</span>
-          </a>
-          <a href="views/products.html" class="top-bar-link">
-            <span>Products</span>
-          </a>
-          <a href="views/past-orders.html" class="top-bar-link">
-            <span>Past Orders</span>
-          </a>
-        </nav>
-        <a @click="toggleSidebar" class="top-bar-cart-link">
-          <i class="icofont-cart-alt icofont-1x"></i>
-          <span>Cart (0)</span>
+<body>
+
+  <div id="app">
+
+    <header class="top-bar spread">
+      <nav class="top-bar-nav">
+        <a href="#" class="top-bar-link">
+          <i class="icofont-spoon-and-fork"></i>
+          <span>Home</span>
         </a>
-      </header>
+        <a href="views/products.html" class="top-bar-link">
+          <span>Products</span>
+        </a>
+        <a href="views/past-orders.html" class="top-bar-link">
+          <span>Past Orders</span>
+        </a>
+      </nav>
+      <a @click="toggleSidebar" class="top-bar-cart-link">
+        <i class="icofont-cart-alt icofont-1x"></i>
+        <span>Cart (0)</span>
+      </a>
+    </header>
 
-      <div class="splash-container">
-        <div class="splash">
-          <h1>Splendid Food</h1>
-        </div>
+    <div class="splash-container">
+      <div class="splash">
+        <h1>Splendid Food</h1>
       </div>
-
-      <main class="wrapper">
-
-        <h2>Recommended</h2>
-
-        <div class="recommended">
-
-          <div v-for="product in inventory.slice(0,3)" class="card">
-            <div class="card-title">
-              {{product.name}}
-            </div>
-            <div class="card-body">
-              <i class="icofont-10x icofont-{{product.icon}}"></i>
-              <form>
-                <div class="row">
-                  <div class="cell">
-                    <label>Type:</label>
-                  </div>
-                  <div class="cell">
-                    <em>{{product.type}}</em>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="cell">
-                    <label>Price:</label>
-                  </div>
-                  <div class="cell">
-                    ${{product.price.USD}}
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="cell">
-                    <label>Quantity:</label>
-                  </div>
-                  <div class="cell">
-                    <input type="number" v-model.number="inventory.carrots">
-                  </div>
-                </div>
-              </form>
-            </div>
-            <div class="card-footer">
-              <button @click="addToCart('carrots')" class="btn btn-light">
-                Add to cart
-              </button>
-            </div>
-          </div>
-
-
-        </div>
-
-      </main>
-
-      <sidebar
-      v-if="showSidebar"
-      :toggle="toggleSidebar"
-      :cart="cart" />
-
-      <footer>
-      </footer>
-
     </div>
 
-    <script src="https://unpkg.com/vue@next"></script>
-    <script>
-      let app = Vue.createApp({
-        data() {
-          return {
-            showSidebar: false,
-            inventory: [],
-            cart: {
-              carrots: 0,
-              pineapples: 0,
-              cherries: 0
-            }
-          }
-        },
-        methods: {
-          addToCart(type, quantity) {
-            this.cart[type] += this.inventory[type]
-            console.log(this.cart)
-          },
-          toggleSidebar() {
-            this.showSidebar = !this.showSidebar
-          }
-        },
-        async mounted() {
-          const res = await fetch('./food.json')
-          const data = await res.json()
-          this.inventory = data
-        }
-      })
+    <main class="wrapper">
 
-      app.component('sidebar', {
-        props:['toggle', 'cart'],
-        computed: {
-          cartTotal() {
-            return (this.cart.carrots * 4.82).toFixed(2)
-          }
+      <h2>Recommended</h2>
+
+      <div class="recommended">
+
+        <div v-for="(product,i) in inventory.slice(0,3)" :key="product.id" class="card">
+          <div class="card-title">
+            {{product.name}}
+          </div>
+          <div class="card-body">
+            <i class="icofont-10x icofont-{{product.icon}}"></i>
+            <form>
+              <div class="row">
+                <div class="cell">
+                  <label>Type:</label>
+                </div>
+                <div class="cell">
+                  <em>{{product.type}}</em>
+                </div>
+              </div>
+              <div class="row">
+                <div class="cell">
+                  <label>Price:</label>
+                </div>
+                <div class="cell">
+                  ${{product.price.USD}}
+                </div>
+              </div>
+              <div class="row">
+                <div class="cell">
+                  <label>Quantity:</label>
+                </div>
+                <div class="cell">
+                  <input type="number" v-model.number="product.quantity">
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="card-footer">
+            <button @click="addToCart(product.name, i)" class="btn btn-light">
+              Add to cart
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+    <sidebar v-if="showSidebar" :toggle="toggleSidebar" :cart="cart" />
+
+    <footer>
+    </footer>
+
+  </div>
+
+  <script src="https://unpkg.com/vue@next"></script>
+  <script>
+    let app = Vue.createApp({
+      data() {
+        return {
+          showSidebar: false,
+          inventory: [],
+          cart: {}
+        }
+      },
+      methods: {
+        addToCart(name, index) {
+          if (!this.cart[name]) this.cart[name] = 0
+          this.cart[name] += this.inventory[index].quantity
+          console.log(this.cart)
         },
-        template: `
+        toggleSidebar() {
+          this.showSidebar = !this.showSidebar
+        }
+      },
+      async mounted() {
+        const res = await fetch('./food.json')
+        const data = await res.json()
+        this.inventory = data
+      }
+    })
+
+    app.component('sidebar', {
+      props: ['toggle', 'cart'],
+      computed: {
+        cartTotal() {
+          return (this.cart.carrots * 4.82).toFixed(2)
+        }
+      },
+      template: `
         <aside class="cart-container">
         <div class="cart">
           <h1 class="cart-title spread">
@@ -181,8 +176,10 @@
         </div>
       </aside>
         `
-      })
-      app.mount('#app')
-    </script>
-  </body>
+    })
+    app.mount('#app')
+
+  </script>
+</body>
+
 </html>
